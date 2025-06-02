@@ -1,0 +1,13 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/yausername2
+
+---
+
+I’m a Cybersecurity Specialist with over 4 years of hands-on experience in protecting digital assets and identifying emerging cyber threats. My focus has been on defensive strategies (Blue Team), threat hunting, and malware analysis, along with a strong passion for intelligence gathering and physical security.
