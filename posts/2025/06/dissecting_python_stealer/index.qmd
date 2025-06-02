@@ -1,0 +1,136 @@
+---
+title: "Dissecting a Python Stealer"
+subtitle: "Malware Analysis Series: Part 1"
+author: "yausername2"
+date: "2025-06-01"
+categories: [Malware Analysis, Python, PyInstaller]
+image: "image.jpg"
+---
+
+## Introduction
+
+In this post, we analyze a Python stealer malware sample distributed as a standalone executable, packed using PyInstaller. We will examine how to extract the compiled Python bytecode files, decompile them, deobfuscate the code if necessary, and discuss its functionality.
+
+## Sample Overview
+
+- **File Type:** `exe`
+- **Purpose:** Stealing sensitive information
+- **Sample (sha256):** `24d66c7d5c6250403a957c282772b01c9edab85a29bcea8e0690ad7672f74ddf` [MalwareBazaar](https://bazaar.abuse.ch/sample/24d66c7d5c6250403a957c282772b01c9edab85a29bcea8e0690ad7672f74ddf/)
+
+## Static Analysis
+
+### 1. File Information
+
+- **Initial Analysis:** Use [Detect It Easy (DIE)](https://github.com/horsicq/Detect-It-Easy) to scan the sample. The `diec` (console version) tool reveals that the file is an executable packaged with PyInstaller.
+
+![](https://i.imgur.com/UHpPsrj.png)
+
+### 2. PyInstaller Extraction
+
+Since we know the executable was packed using PyInstaller, we can attempt to extract its contents using [pyinstxtractor-ng](https://github.com/pyinstxtractor/pyinstxtractor-ng). This tool unpacks the embedded files from the executable, including the `.pyc` (compiled Python) files.
+
+![](https://i.imgur.com/RJxhrwf.png)
+
+The tool locates the main `.pyc` entrypoint file required for further analysis, and also identifies both the PyInstaller version (2.1+) and Python version (3.8) used to package the executable, as confirmed by the presence of `python38.dll` among the extracted files:
+![](https://i.imgur.com/GtyKaAa.png)
+
+However, PyInstaller does not store the original `.py` source files during packaging. To analyze the actual Python code, we need to decompile these `.pyc` files using a Python decompiler, which translates compiled Python bytecode back into readable source code, making it possible to inspect the malware's logic and behavior.
+
+Once you have determined the Python version and located the main `.pyc` file, consult [this table](https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing) to select an appropriate decompiler.
+
+### 3. Decompiling `.pyc` Files
+
+We will use `pylingual` to decompile the `.pyc` file. Pylingual is a web-based Python decompiler that supports multiple Python versions, including 3.8.
+
+1. Upload the extracted `.pyc` file to the [pylingual decompiler](https://pylingual.io/).
+2. Download or view the decompiled source code.
+
+This process should yield a readable Python script, allowing us to analyze the malware's logic:
+![](https://i.imgur.com/zVEu9ia.png)
+
+### 4. Analyzing the Code
+
+#### **First Stage**
+In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used `Fernet` encryption to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the `exec` function, launching the second-stage payload responsible for stealing sensitive information.
+
+To analyze the real stealer code, replace the `exec` function with a `print` statement, ideally applying the `.decode('utf-8')` method to the argument. This approach ensures proper handling of escaped character sequences.
+
+![](https://i.imgur.com/met8y0a.png)
+
+Run the modified script in a safe, isolated environment to print and inspect the decrypted second-stage code:
+
+![](https://i.imgur.com/G19blHQ.png)
+
+The deobfuscated code is available [here](https://pastebin.com/5qudhiDz).
+
+#### **Second Stage**
+At this point, we have obtained a fully readable result. However, instead of analyzing the code line by line, we will focus on understanding the main operations of the malware by examining some of its key classes and functions:
+
+- **Credential Theft:**
+```python
+class PassExtractor:
+    ...
+```
+This class is dedicated to stealing saved credentials from various browsers, including Mozilla Firefox, Chrome, Brave, and Opera.
+
+- **Clipboard Logging:**
+```python
+def clipboard_logger():
+    ...
+```
+This function continuously monitors and records clipboard contents.
+
+- **Keylogging:**
+```python
+def run_key_recorder():
+    ...
+```
+This function records all keystrokes made by the user.
+
+- **Screenshot Capture:**
+```python
+def take_sc_snaps():
+    ...
+```
+This function captures periodic screenshots of the victim's desktop.
+
+- **Network Scanning:**
+```python
+class NetworkScanner:
+    ...
+```
+This class scans the local network for open ports and reports the results back to the attacker.
+
+- **Command and Control:**
+```python
+class App:
+    VERSION = "1.6.0"
+    BASE_URL = "hxxp[://]169[.]239[.]129[.]108:5555"  # defanged URL for security reasons
+    ...
+    SIO_INSTANCE = socketio.Client()
+    ...
+    # Event Registrations
+    ...
+    @App.SIO_INSTANCE.on('command')
+    def on_command(data: dict):
+        ...
+    @App.SIO_INSTANCE.on('action')
+    def on_action(data: dict):
+        ...
+    @App.SIO_INSTANCE.on('extractor')
+    def on_extractor(data):
+        ...
+    # And more...
+```
+The `App` class and its Socket.IO event handlers form the core of the malware's command-and-control (C2) logic, enabling remote control and data exfiltration.
+
+From the `App` class, we can also retrieve the attacker's server IP address (`169.239.129.108`), which can be used as an indicator of compromise (IOC) in incident response or threat intelligence scenarios.
+
+## Reference
+
+- [Detect It Easy (DIE)](https://github.com/horsicq/Detect-It-Easy): A tool for identifying file types and packers, useful for initial malware analysis.
+- [pyinstxtractor-ng](https://github.com/pyinstxtractor/pyinstxtractor-ng): A script to extract contents from PyInstaller-packed executables.
+- [MalwareBazaar](https://bazaar.abuse.ch/): A public repository for sharing and searching malware samples.
+- [CPython Bytecode Reversing Table](https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing): A reference table for matching Python versions to compatible decompilers.
+- [pylingual Python Decompiler](https://pylingual.io/): An online tool for decompiling `.pyc` files to readable Python source code.
+- [Deobfuscated code (Pastebin)](https://pastebin.com/5qudhiDz): The fully deobfuscated Python stealer code obtained during the analysis.
