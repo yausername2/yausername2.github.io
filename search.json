@@ -1,10 +1,38 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "yaUsername Blog",
+    "objectID": "posts/2025/06/dissecting_python_stealer/index.html",
+    "href": "posts/2025/06/dissecting_python_stealer/index.html",
+    "title": "Dissecting a Python Stealer",
     "section": "",
-    "text": "No matching items"
+    "text": "In this post, we analyze a Python stealer malware sample distributed as a standalone executable, packed using PyInstaller. We will examine how to extract the compiled Python bytecode files, decompile them, deobfuscate the code if necessary, and discuss its functionality."
+  },
+  {
+    "objectID": "posts/2025/06/dissecting_python_stealer/index.html#introduction",
+    "href": "posts/2025/06/dissecting_python_stealer/index.html#introduction",
+    "title": "Dissecting a Python Stealer",
+    "section": "",
+    "text": "In this post, we analyze a Python stealer malware sample distributed as a standalone executable, packed using PyInstaller. We will examine how to extract the compiled Python bytecode files, decompile them, deobfuscate the code if necessary, and discuss its functionality."
+  },
+  {
+    "objectID": "posts/2025/06/dissecting_python_stealer/index.html#sample-overview",
+    "href": "posts/2025/06/dissecting_python_stealer/index.html#sample-overview",
+    "title": "Dissecting a Python Stealer",
+    "section": "Sample Overview",
+    "text": "Sample Overview\n\nFile Type: exe\nPurpose: Stealing sensitive information\nSample (sha256): 24d66c7d5c6250403a957c282772b01c9edab85a29bcea8e0690ad7672f74ddf MalwareBazaar"
+  },
+  {
+    "objectID": "posts/2025/06/dissecting_python_stealer/index.html#static-analysis",
+    "href": "posts/2025/06/dissecting_python_stealer/index.html#static-analysis",
+    "title": "Dissecting a Python Stealer",
+    "section": "Static Analysis",
+    "text": "Static Analysis\n\n1. File Information\n\nInitial Analysis: Use Detect It Easy (DIE) to scan the sample. The diec (console version) tool reveals that the file is an executable packaged with PyInstaller.\n\n\n\n\n2. PyInstaller Extraction\nSince we know the executable was packed using PyInstaller, we can attempt to extract its contents using pyinstxtractor-ng. This tool unpacks the embedded files from the executable, including the .pyc (compiled Python) files.\n\nThe tool locates the main .pyc entrypoint file required for further analysis, and also identifies both the PyInstaller version (2.1+) and Python version (3.8) used to package the executable, as confirmed by the presence of python38.dll among the extracted files: \nHowever, PyInstaller does not store the original .py source files during packaging. To analyze the actual Python code, we need to decompile these .pyc files using a Python decompiler, which translates compiled Python bytecode back into readable source code, making it possible to inspect the malware’s logic and behavior.\nOnce you have determined the Python version and located the main .pyc file, consult this table to select an appropriate decompiler.\n\n\n3. Decompiling .pyc Files\nWe will use pylingual to decompile the .pyc file. Pylingual is a web-based Python decompiler that supports multiple Python versions, including 3.8.\n\nUpload the extracted .pyc file to the pylingual decompiler.\nDownload or view the decompiled source code.\n\nThis process should yield a readable Python script, allowing us to analyze the malware’s logic: \n\n\n4. Analyzing the Code\n\nFirst Stage\nIn this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used Fernet encryption to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the exec function, launching the second-stage payload responsible for stealing sensitive information.\nTo analyze the real stealer code, replace the exec function with a print statement, ideally applying the .decode('utf-8') method to the argument. This approach ensures proper handling of escaped character sequences.\n\nRun the modified script in a safe, isolated environment to print and inspect the decrypted second-stage code:\n\nThe deobfuscated code is available here.\n\n\nSecond Stage\nAt this point, we have obtained a fully readable result. However, instead of analyzing the code line by line, we will focus on understanding the main operations of the malware by examining some of its key classes and functions:\n\nCredential Theft:\n\nclass PassExtractor:\n    ...\nThis class is dedicated to stealing saved credentials from various browsers, including Mozilla Firefox, Chrome, Brave, and Opera.\n\nClipboard Logging:\n\ndef clipboard_logger():\n    ...\nThis function continuously monitors and records clipboard contents.\n\nKeylogging:\n\ndef run_key_recorder():\n    ...\nThis function records all keystrokes made by the user.\n\nScreenshot Capture:\n\ndef take_sc_snaps():\n    ...\nThis function captures periodic screenshots of the victim’s desktop.\n\nNetwork Scanning:\n\nclass NetworkScanner:\n    ...\nThis class scans the local network for open ports and reports the results back to the attacker.\n\nCommand and Control:\n\nclass App:\n    VERSION = \"1.6.0\"\n    BASE_URL = \"hxxp[://]169[.]239[.]129[.]108:5555\"  # defanged URL for security reasons\n    ...\n    SIO_INSTANCE = socketio.Client()\n    ...\n    # Event Registrations\n    ...\n    @App.SIO_INSTANCE.on('command')\n    def on_command(data: dict):\n        ...\n    @App.SIO_INSTANCE.on('action')\n    def on_action(data: dict):\n        ...\n    @App.SIO_INSTANCE.on('extractor')\n    def on_extractor(data):\n        ...\n    # And more...\nThe App class and its Socket.IO event handlers form the core of the malware’s command-and-control (C2) logic, enabling remote control and data exfiltration.\nFrom the App class, we can also retrieve the attacker’s server IP address (169.239.129.108), which can be used as an indicator of compromise (IOC) in incident response or threat intelligence scenarios."
+  },
+  {
+    "objectID": "posts/2025/06/dissecting_python_stealer/index.html#reference",
+    "href": "posts/2025/06/dissecting_python_stealer/index.html#reference",
+    "title": "Dissecting a Python Stealer",
+    "section": "Reference",
+    "text": "Reference\n\nDetect It Easy (DIE): A tool for identifying file types and packers, useful for initial malware analysis.\npyinstxtractor-ng: A script to extract contents from PyInstaller-packed executables.\nMalwareBazaar: A public repository for sharing and searching malware samples.\nCPython Bytecode Reversing Table: A reference table for matching Python versions to compatible decompilers.\npylingual Python Decompiler: An online tool for decompiling .pyc files to readable Python source code.\nDeobfuscated code (Pastebin): The fully deobfuscated Python stealer code obtained during the analysis."
   },
   {
     "objectID": "about.html",
@@ -12,5 +40,12 @@
     "title": "About",
     "section": "",
     "text": "I’m a Cybersecurity Specialist with over 4 years of hands-on experience in protecting digital assets and identifying emerging cyber threats. My focus has been on defensive strategies (Blue Team), threat hunting, and malware analysis, along with a strong passion for intelligence gathering and physical security."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "yaUsername Blog",
+    "section": "",
+    "text": "Dissecting a Python Stealer\n\n\nMalware Analysis Series: Part 1\n\n\n\nMalware Analysis\n\nPython\n\nPyInstaller\n\n\n\n\n\n\n\n\n\nJun 1, 2025\n\n\nyausername2\n\n\n\n\n\nNo matching items"
   }
 ]

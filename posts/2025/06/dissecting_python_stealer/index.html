@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="yausername2">
+<meta name="dcterms.date" content="2025-06-01">
 
-<title>yaUsername Blog – yaUsername</title>
+<title>Dissecting a Python Stealer – yaUsername</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,30 +22,63 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8e489af8cbd3f2191f5be0034560f78b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../../">
+<script src="../../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../site_libs/bootstrap/bootstrap-dark-8e489af8cbd3f2191f5be0034560f78b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -71,70 +106,12 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-subtitle','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-subtitle","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../../../styles.css">
 </head>
 
-<body class="nav-fixed quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed fullcontent quarto-dark"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -297,11 +274,11 @@ window.Quarto = {
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../../../index.html">
     <span class="navbar-title">yaUsername</span>
     </a>
   </div>
@@ -312,7 +289,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -329,82 +306,174 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">yaUsername Blog</h1>
-                      </div>
-  </div>
-    
-  
-  <div class="quarto-title-meta column-page-left">
-
-      
-    
-      
-    </div>
-    
-  
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TWFsd2FyZSUyMEFuYWx5c2lz">Malware Analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHlJbnN0YWxsZXI=">PyInstaller <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHl0aG9u">Python <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Dissecting a Python Stealer</h1>
+<p class="subtitle lead">Malware Analysis Series: Part 1</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Malware Analysis</div>
+    <div class="quarto-category">Python</div>
+    <div class="quarto-category">PyInstaller</div>
+  </div>
+  </div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>yausername2 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 1, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
 
 
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>In this post, we analyze a Python stealer malware sample distributed as a standalone executable, packed using PyInstaller. We will examine how to extract the compiled Python bytecode files, decompile them, deobfuscate the code if necessary, and discuss its functionality.</p>
+</section>
+<section id="sample-overview" class="level2">
+<h2 class="anchored" data-anchor-id="sample-overview">Sample Overview</h2>
+<ul>
+<li><strong>File Type:</strong> <code>exe</code></li>
+<li><strong>Purpose:</strong> Stealing sensitive information</li>
+<li><strong>Sample (sha256):</strong> <code>24d66c7d5c6250403a957c282772b01c9edab85a29bcea8e0690ad7672f74ddf</code> <a href="https://bazaar.abuse.ch/sample/24d66c7d5c6250403a957c282772b01c9edab85a29bcea8e0690ad7672f74ddf/">MalwareBazaar</a></li>
+</ul>
+</section>
+<section id="static-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="static-analysis">Static Analysis</h2>
+<section id="file-information" class="level3">
+<h3 class="anchored" data-anchor-id="file-information">1. File Information</h3>
+<ul>
+<li><strong>Initial Analysis:</strong> Use <a href="https://github.com/horsicq/Detect-It-Easy">Detect It Easy (DIE)</a> to scan the sample. The <code>diec</code> (console version) tool reveals that the file is an executable packaged with PyInstaller.</li>
+</ul>
+<p><img src="https://i.imgur.com/UHpPsrj.png" class="img-fluid"></p>
+</section>
+<section id="pyinstaller-extraction" class="level3">
+<h3 class="anchored" data-anchor-id="pyinstaller-extraction">2. PyInstaller Extraction</h3>
+<p>Since we know the executable was packed using PyInstaller, we can attempt to extract its contents using <a href="https://github.com/pyinstxtractor/pyinstxtractor-ng">pyinstxtractor-ng</a>. This tool unpacks the embedded files from the executable, including the <code>.pyc</code> (compiled Python) files.</p>
+<p><img src="https://i.imgur.com/RJxhrwf.png" class="img-fluid"></p>
+<p>The tool locates the main <code>.pyc</code> entrypoint file required for further analysis, and also identifies both the PyInstaller version (2.1+) and Python version (3.8) used to package the executable, as confirmed by the presence of <code>python38.dll</code> among the extracted files: <img src="https://i.imgur.com/GtyKaAa.png" class="img-fluid"></p>
+<p>However, PyInstaller does not store the original <code>.py</code> source files during packaging. To analyze the actual Python code, we need to decompile these <code>.pyc</code> files using a Python decompiler, which translates compiled Python bytecode back into readable source code, making it possible to inspect the malware’s logic and behavior.</p>
+<p>Once you have determined the Python version and located the main <code>.pyc</code> file, consult <a href="https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing">this table</a> to select an appropriate decompiler.</p>
+</section>
+<section id="decompiling-.pyc-files" class="level3">
+<h3 class="anchored" data-anchor-id="decompiling-.pyc-files">3. Decompiling <code>.pyc</code> Files</h3>
+<p>We will use <code>pylingual</code> to decompile the <code>.pyc</code> file. Pylingual is a web-based Python decompiler that supports multiple Python versions, including 3.8.</p>
+<ol type="1">
+<li>Upload the extracted <code>.pyc</code> file to the <a href="https://pylingual.io/">pylingual decompiler</a>.</li>
+<li>Download or view the decompiled source code.</li>
+</ol>
+<p>This process should yield a readable Python script, allowing us to analyze the malware’s logic: <img src="https://i.imgur.com/zVEu9ia.png" class="img-fluid"></p>
+</section>
+<section id="analyzing-the-code" class="level3">
+<h3 class="anchored" data-anchor-id="analyzing-the-code">4. Analyzing the Code</h3>
+<section id="first-stage" class="level4">
+<h4 class="anchored" data-anchor-id="first-stage"><strong>First Stage</strong></h4>
+<p>In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used <code>Fernet</code> encryption to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the <code>exec</code> function, launching the second-stage payload responsible for stealing sensitive information.</p>
+<p>To analyze the real stealer code, replace the <code>exec</code> function with a <code>print</code> statement, ideally applying the <code>.decode('utf-8')</code> method to the argument. This approach ensures proper handling of escaped character sequences.</p>
+<p><img src="https://i.imgur.com/met8y0a.png" class="img-fluid"></p>
+<p>Run the modified script in a safe, isolated environment to print and inspect the decrypted second-stage code:</p>
+<p><img src="https://i.imgur.com/G19blHQ.png" class="img-fluid"></p>
+<p>The deobfuscated code is available <a href="https://pastebin.com/5qudhiDz">here</a>.</p>
+</section>
+<section id="second-stage" class="level4">
+<h4 class="anchored" data-anchor-id="second-stage"><strong>Second Stage</strong></h4>
+<p>At this point, we have obtained a fully readable result. However, instead of analyzing the code line by line, we will focus on understanding the main operations of the malware by examining some of its key classes and functions:</p>
+<ul>
+<li><strong>Credential Theft:</strong></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PassExtractor:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This class is dedicated to stealing saved credentials from various browsers, including Mozilla Firefox, Chrome, Brave, and Opera.</p>
+<ul>
+<li><strong>Clipboard Logging:</strong></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clipboard_logger():</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function continuously monitors and records clipboard contents.</p>
+<ul>
+<li><strong>Keylogging:</strong></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_key_recorder():</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function records all keystrokes made by the user.</p>
+<ul>
+<li><strong>Screenshot Capture:</strong></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> take_sc_snaps():</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This function captures periodic screenshots of the victim’s desktop.</p>
+<ul>
+<li><strong>Network Scanning:</strong></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> NetworkScanner:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This class scans the local network for open ports and reports the results back to the attacker.</p>
+<ul>
+<li><strong>Command and Control:</strong></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> App:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    VERSION <span class="op">=</span> <span class="st">"1.6.0"</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    BASE_URL <span class="op">=</span> <span class="st">"hxxp[://]169[.]239[.]129[.]108:5555"</span>  <span class="co"># defanged URL for security reasons</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    SIO_INSTANCE <span class="op">=</span> socketio.Client()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Event Registrations</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">@App.SIO_INSTANCE.on</span>(<span class="st">'command'</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> on_command(data: <span class="bu">dict</span>):</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">@App.SIO_INSTANCE.on</span>(<span class="st">'action'</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> on_action(data: <span class="bu">dict</span>):</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">@App.SIO_INSTANCE.on</span>(<span class="st">'extractor'</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> on_extractor(data):</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># And more...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The <code>App</code> class and its Socket.IO event handlers form the core of the malware’s command-and-control (C2) logic, enabling remote control and data exfiltration.</p>
+<p>From the <code>App</code> class, we can also retrieve the attacker’s server IP address (<code>169.239.129.108</code>), which can be used as an indicator of compromise (IOC) in incident response or threat intelligence scenarios.</p>
+</section>
+</section>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">Reference</h2>
+<ul>
+<li><a href="https://github.com/horsicq/Detect-It-Easy">Detect It Easy (DIE)</a>: A tool for identifying file types and packers, useful for initial malware analysis.</li>
+<li><a href="https://github.com/pyinstxtractor/pyinstxtractor-ng">pyinstxtractor-ng</a>: A script to extract contents from PyInstaller-packed executables.</li>
+<li><a href="https://bazaar.abuse.ch/">MalwareBazaar</a>: A public repository for sharing and searching malware samples.</li>
+<li><a href="https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing">CPython Bytecode Reversing Table</a>: A reference table for matching Python versions to compatible decompilers.</li>
+<li><a href="https://pylingual.io/">pylingual Python Decompiler</a>: An online tool for decompiling <code>.pyc</code> files to readable Python source code.</li>
+<li><a href="https://pastebin.com/5qudhiDz">Deobfuscated code (Pastebin)</a>: The fully deobfuscated Python stealer code obtained during the analysis.</li>
+</ul>
 
 
+</section>
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="TWFsd2FyZSUyMEFuYWx5c2lzJTJDUHl0aG9uJTJDUHlJbnN0YWxsZXI=" data-listing-date-sort="1748736000000" data-listing-file-modified-sort="1748887394149" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="768">
-<div class="thumbnail"><a href="./posts/2025/06/dissecting_python_stealer/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/2025/06/dissecting_python_stealer/image.jpg" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/2025/06/dissecting_python_stealer/index.html" class="no-external">Dissecting a Python Stealer</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/2025/06/dissecting_python_stealer/index.html" class="no-external">Malware Analysis Series: Part 1</a>
-</div>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('TWFsd2FyZSUyMEFuYWx5c2lz'); return false;">Malware Analysis</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHl0aG9u'); return false;">Python</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlJbnN0YWxsZXI='); return false;">PyInstaller</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/2025/06/dissecting_python_stealer/index.html" class="no-external">
-In this post, we analyze a Python stealer malware sample distributed as a standalone executable, packed using PyInstaller. We will examine how to extract the compiled Python…
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/2025/06/dissecting_python_stealer/index.html" class="no-external">
-<div class="listing-date">
-Jun 1, 2025
-</div>
-<div class="listing-author">
-yausername2
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right

@@ -1,6 +1,8 @@
 [
   {
     "listing": "/index.html",
-    "items": []
+    "items": [
+      "/posts/2025/06/dissecting_python_stealer/index.html"
+    ]
   }
 ]
