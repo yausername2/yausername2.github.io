@@ -1,5 +1,5 @@
 ---
-title: "yaUsername Blog"
+title: "Homepage"
 listing:
   contents: posts
   sort: "date desc"
