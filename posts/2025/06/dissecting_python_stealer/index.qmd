@@ -51,7 +51,7 @@ This process should yield a readable Python script, allowing us to analyze the m
 ### 4. Analyzing the Code
 
 #### **First Stage**
-In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used `Fernet` encryption to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the `exec` function, launching the second-stage payload responsible for stealing sensitive information.
+In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used [Fernet encryption](https://cryptography.io/en/latest/fernet/) to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the `exec` function, launching the second-stage payload responsible for stealing sensitive information.
 
 To analyze the real stealer code, replace the `exec` function with a `print` statement, ideally applying the `.decode('utf-8')` method to the argument. This approach ensures proper handling of escaped character sequences.
 
@@ -133,4 +133,5 @@ From the `App` class, we can also retrieve the attacker's server IP address (`16
 - [MalwareBazaar](https://bazaar.abuse.ch/): A public repository for sharing and searching malware samples.
 - [CPython Bytecode Reversing Table](https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing): A reference table for matching Python versions to compatible decompilers.
 - [pylingual Python Decompiler](https://pylingual.io/): An online tool for decompiling `.pyc` files to readable Python source code.
+- [Fernet encryption](https://cryptography.io/en/latest/fernet/): An implementation of symmetric authenticated cryptography.
 - [Deobfuscated code (Pastebin)](https://pastebin.com/5qudhiDz): The fully deobfuscated Python stealer code obtained during the analysis.
