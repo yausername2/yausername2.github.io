@@ -32,7 +32,7 @@
     "href": "posts/2025/06/dissecting_python_stealer/index.html#reference",
     "title": "Dissecting a Python Stealer",
     "section": "Reference",
-    "text": "Reference\n\nDetect It Easy (DIE): A tool for identifying file types and packers, useful for initial malware analysis.\npyinstxtractor-ng: A script to extract contents from PyInstaller-packed executables.\nMalwareBazaar: A public repository for sharing and searching malware samples.\nCPython Bytecode Reversing Table: A reference table for matching Python versions to compatible decompilers.\npylingual Python Decompiler: An online tool for decompiling .pyc files to readable Python source code.\nDeobfuscated code (Pastebin): The fully deobfuscated Python stealer code obtained during the analysis."
+    "text": "Reference\n\nDetect It Easy (DIE): A tool for identifying file types and packers, useful for initial malware analysis.\npyinstxtractor-ng: A script to extract contents from PyInstaller-packed executables.\nMalwareBazaar: A public repository for sharing and searching malware samples.\nCPython Bytecode Reversing Table: A reference table for matching Python versions to compatible decompilers.\npylingual Python Decompiler: An online tool for decompiling .pyc files to readable Python source code.\nFernet encryption: An implementation of symmetric authenticated cryptography.\nDeobfuscated code (Pastebin): The fully deobfuscated Python stealer code obtained during the analysis."
   },
   {
     "objectID": "about.html",

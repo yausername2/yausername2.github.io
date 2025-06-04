@@ -393,7 +393,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="analyzing-the-code">4. Analyzing the Code</h3>
 <section id="first-stage" class="level4">
 <h4 class="anchored" data-anchor-id="first-stage"><strong>First Stage</strong></h4>
-<p>In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used <code>Fernet</code> encryption to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the <code>exec</code> function, launching the second-stage payload responsible for stealing sensitive information.</p>
+<p>In this case, the decompiled code does not yet reveal the stealer’s logic; instead, it contains a large amount of unreadable data. The developer of this first-stage script used <a href="https://cryptography.io/en/latest/fernet/">Fernet encryption</a> to protect the actual malware payload. The encrypted data is decrypted at runtime using a hardcoded key and immediately executed via the <code>exec</code> function, launching the second-stage payload responsible for stealing sensitive information.</p>
 <p>To analyze the real stealer code, replace the <code>exec</code> function with a <code>print</code> statement, ideally applying the <code>.decode('utf-8')</code> method to the argument. This approach ensures proper handling of escaped character sequences.</p>
 <p><img src="https://i.imgur.com/met8y0a.png" class="img-fluid"></p>
 <p>Run the modified script in a safe, isolated environment to print and inspect the decrypted second-stage code:</p>
@@ -467,6 +467,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="https://bazaar.abuse.ch/">MalwareBazaar</a>: A public repository for sharing and searching malware samples.</li>
 <li><a href="https://struppigel.github.io/WisdomForHedgehogs/Execution%20Environments/CPython%20Bytecode%20Reversing">CPython Bytecode Reversing Table</a>: A reference table for matching Python versions to compatible decompilers.</li>
 <li><a href="https://pylingual.io/">pylingual Python Decompiler</a>: An online tool for decompiling <code>.pyc</code> files to readable Python source code.</li>
+<li><a href="https://cryptography.io/en/latest/fernet/">Fernet encryption</a>: An implementation of symmetric authenticated cryptography.</li>
 <li><a href="https://pastebin.com/5qudhiDz">Deobfuscated code (Pastebin)</a>: The fully deobfuscated Python stealer code obtained during the analysis.</li>
 </ul>
 
